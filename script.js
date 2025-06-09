@@ -2,7 +2,10 @@ const imageInput = document.getElementById('imageInput');
 const qualitySlider = document.getElementById('qualitySlider');
 const qualityValue = document.getElementById('qualityValue');
 const resizeOption = document.getElementById('resizeOption');
-const customSize = document.getElementById('customSize');
+const sizeInputs = document.getElementById('sizeInputs');
+const widthInputGroup = document.getElementById('widthInputGroup');
+const heightInputGroup = document.getElementById('heightInputGroup');
+const scaleDownGroup = document.getElementById('scaleDownGroup');
 const widthInput = document.getElementById('widthInput');
 const heightInput = document.getElementById('heightInput');
 const scaleDown = document.getElementById('scaleDown');
@@ -17,7 +20,10 @@ qualitySlider.addEventListener('input', () => {
 });
 
 resizeOption.addEventListener('change', () => {
-  customSize.classList.toggle('hidden', resizeOption.value !== 'custom');
+  sizeInputs.classList.toggle('hidden', resizeOption.value === 'keepRatio' && !widthInput.value && !heightInput.value);
+  widthInputGroup.classList.toggle('hidden', resizeOption.value === 'scaleHeight');
+  heightInputGroup.classList.toggle('hidden', resizeOption.value === 'scaleWidth');
+  scaleDownGroup.classList.toggle('hidden', resizeOption.value === 'keepRatio');
 });
 
 compressBtn.addEventListener('click', async () => {
@@ -47,17 +53,32 @@ compressBtn.addEventListener('click', async () => {
         let targetWidth = img.width;
         let targetHeight = img.height;
 
-        if (resizeOption.value === 'custom' && widthInput.value && heightInput.value) {
+        if (resizeOption.value === 'scaleWidth' && widthInput.value) {
+          const maxWidth = parseInt(widthInput.value);
+          if (scaleDown.checked && img.width > maxWidth) {
+            targetWidth = maxWidth;
+            targetHeight = Math.round((img.height / img.width) * targetWidth);
+          } else if (!scaleDown.checked) {
+            targetWidth = maxWidth;
+            targetHeight = img.height;
+          }
+        } else if (resizeOption.value === 'scaleHeight' && heightInput.value) {
+          const maxHeight = parseInt(heightInput.value);
+          if (scaleDown.checked && img.height > maxHeight) {
+            targetHeight = maxHeight;
+            targetWidth = Math.round((img.width / img.height) * targetHeight);
+          } else if (!scaleDown.checked) {
+            targetHeight = maxHeight;
+            targetWidth = img.width;
+          }
+        } else if (resizeOption.value === 'custom' && widthInput.value && heightInput.value) {
           const maxWidth = parseInt(widthInput.value);
           const maxHeight = parseInt(heightInput.value);
-
           if (scaleDown.checked) {
-            // Thu nhỏ theo tỉ lệ để không vượt quá maxWidth hoặc maxHeight
             const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
             targetWidth = Math.round(img.width * ratio);
             targetHeight = Math.round(img.height * ratio);
           } else {
-            // Sử dụng kích thước chính xác mà người dùng nhập
             targetWidth = maxWidth;
             targetHeight = maxHeight;
           }
