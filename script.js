@@ -5,6 +5,7 @@ const resizeOption = document.getElementById('resizeOption');
 const customSize = document.getElementById('customSize');
 const widthInput = document.getElementById('widthInput');
 const heightInput = document.getElementById('heightInput');
+const scaleDown = document.getElementById('scaleDown');
 const compressBtn = document.getElementById('compressBtn');
 const result = document.getElementById('result');
 const outputImages = document.getElementById('outputImages');
@@ -47,8 +48,19 @@ compressBtn.addEventListener('click', async () => {
         let targetHeight = img.height;
 
         if (resizeOption.value === 'custom' && widthInput.value && heightInput.value) {
-          targetWidth = parseInt(widthInput.value);
-          targetHeight = parseInt(heightInput.value);
+          const maxWidth = parseInt(widthInput.value);
+          const maxHeight = parseInt(heightInput.value);
+
+          if (scaleDown.checked) {
+            // Thu nhỏ theo tỉ lệ để không vượt quá maxWidth hoặc maxHeight
+            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+            targetWidth = Math.round(img.width * ratio);
+            targetHeight = Math.round(img.height * ratio);
+          } else {
+            // Sử dụng kích thước chính xác mà người dùng nhập
+            targetWidth = maxWidth;
+            targetHeight = maxHeight;
+          }
         } else if (resizeOption.value === 'keepRatio' && widthInput.value) {
           targetWidth = parseInt(widthInput.value);
           targetHeight = Math.round((img.height / img.width) * targetWidth);
