@@ -2,7 +2,7 @@ body {
   font-family: 'Inter', Arial, sans-serif;
 }
 
-.output-image {
+.output-image, .output-video, .output-audio {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
@@ -10,7 +10,7 @@ body {
   transition: transform 0.2s;
 }
 
-.output-image:hover {
+.output-image:hover, .output-video:hover {
   transform: scale(1.02);
 }
 
